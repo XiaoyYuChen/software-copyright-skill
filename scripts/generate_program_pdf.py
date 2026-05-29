@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import fnmatch
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -17,17 +18,276 @@ NEEDED = LINES_PER_PAGE * TOTAL_PAGES
 MAX_LEFT_PATH_LEN = 30
 ZH_FONT_NAME = "ZhFont"
 ZH_FONT_FILE = Path(r"C:\Windows\Fonts\simhei.ttf")
-INCLUDE_EXTS = {".vue", ".js", ".ts", ".json"}
+# 仅收录用户编写的源程序，不含配置、数据、锁文件、IDE/构建产物
+SOURCE_EXTS = {
+    ".c",
+    ".cpp",
+    ".cs",
+    ".css",
+    ".dart",
+    ".go",
+    ".h",
+    ".hpp",
+    ".html",
+    ".java",
+    ".js",
+    ".jsx",
+    ".kt",
+    ".less",
+    ".lua",
+    ".m",
+    ".mm",
+    ".php",
+    ".py",
+    ".rb",
+    ".rs",
+    ".scss",
+    ".swift",
+    ".ts",
+    ".tsx",
+    ".vb",
+    ".vue",
+}
+
 EXCLUDE_DIRS = {
-    "uni_modules",
-    "unpackage",
-    ".hbuilderx",
-    "software-copyright",
+    # 依赖与包管理
     "node_modules",
+    "bower_components",
+    "vendor",
+    "uni_modules",
+    # 构建 / 发布 / IDE 产物
+    "dist",
+    "build",
+    "out",
+    "output",
+    "target",
+    "bin",
+    "obj",
+    "unpackage",
+    ".next",
+    ".nuxt",
+    ".output",
+    ".svelte-kit",
+    ".hbuilderx",
+    ".idea",
+    ".vscode",
+    ".vs",
+    ".fleet",
+    ".settings",
+    ".gradle",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".tox",
+    "coverage",
+    "htmlcov",
+    # 生成代码
+    "generated",
+    "gen",
+    "__generated__",
+    "auto-generated",
+    # 数据 / 资源（非源程序）
+    "data",
+    "dataset",
+    "datasets",
+    "fixtures",
+    "mock-data",
+    "migrations",
+    "seeds",
+    "dump",
+    "uploads",
+    "static",
+    "public",
+    "assets",
+    "resources",
+    # 软著输出与其它
+    "software-copyright",
     ".git",
     ".cursor",
-    "dump",
+    ".svn",
+    ".hg",
 }
+
+# 路径段命中则降权或排除（测试、示例、文档目录）
+LOW_PRIORITY_DIR_NAMES = {
+    "test",
+    "tests",
+    "__tests__",
+    "spec",
+    "specs",
+    "e2e",
+    "integration",
+    "mock",
+    "mocks",
+    "__mocks__",
+    "fixture",
+    "fixtures",
+    "example",
+    "examples",
+    "demo",
+    "demos",
+    "sample",
+    "samples",
+    "docs",
+    "doc",
+    "documentation",
+}
+
+HIGH_PRIORITY_DIR_NAMES = {
+    "src",
+    "source",
+    "app",
+    "apps",
+    "lib",
+    "libs",
+    "core",
+    "modules",
+    "module",
+    "pages",
+    "page",
+    "views",
+    "view",
+    "components",
+    "component",
+    "api",
+    "apis",
+    "services",
+    "service",
+    "server",
+    "client",
+    "backend",
+    "frontend",
+    "controllers",
+    "models",
+    "handlers",
+    "routes",
+    "router",
+    "store",
+    "stores",
+    "sdk",
+    "utils",
+    "common",
+    "shared",
+}
+
+EXCLUDE_FILE_NAMES = frozenset(
+    {
+        # 包管理与锁文件
+        "package.json",
+        "package-lock.json",
+        "yarn.lock",
+        "pnpm-lock.yaml",
+        "npm-shrinkwrap.json",
+        "bun.lock",
+        "bun.lockb",
+        "composer.json",
+        "composer.lock",
+        "gemfile",
+        "gemfile.lock",
+        "cargo.lock",
+        "go.mod",
+        "go.sum",
+        "pipfile",
+        "pipfile.lock",
+        "poetry.lock",
+        "requirements.txt",
+        # 编译 / 构建配置
+        "tsconfig.json",
+        "tsconfig.app.json",
+        "tsconfig.node.json",
+        "jsconfig.json",
+        "project.config.json",
+        "app.json",
+        "app.config.js",
+        "app.config.ts",
+        "manifest.json",
+        "pages.json",
+        "android.json",
+        "ios.json",
+        "gradle.properties",
+        "settings.gradle",
+        "settings.gradle.kts",
+        "build.gradle",
+        "build.gradle.kts",
+        "pom.xml",
+        "cmakeLists.txt",
+        "makefile",
+        "dockerfile",
+        "docker-compose.yml",
+        "docker-compose.yaml",
+        # 环境与 CI 配置
+        ".editorconfig",
+        ".prettierrc",
+        ".prettierrc.json",
+        ".eslintrc",
+        ".eslintrc.json",
+        ".eslintrc.js",
+        ".eslintrc.cjs",
+        ".stylelintrc",
+        ".stylelintrc.json",
+        "eslint.config.js",
+        "eslint.config.mjs",
+        "eslint.config.cjs",
+        "prettier.config.js",
+        "babel.config.js",
+        "babel.config.json",
+        "jest.config.js",
+        "jest.config.ts",
+        "vitest.config.ts",
+        "playwright.config.ts",
+        "cypress.config.js",
+        "tailwind.config.js",
+        "tailwind.config.ts",
+        "postcss.config.js",
+        "uno.config.ts",
+        "components.d.ts",
+        "auto-imports.d.ts",
+        "typed-router.d.ts",
+        ".env",
+        ".env.example",
+        ".env.local",
+        ".env.development",
+        ".env.production",
+        ".gitignore",
+        ".gitattributes",
+        ".npmrc",
+        ".nvmrc",
+        ".yarnrc",
+        ".yarnrc.yml",
+    }
+)
+
+EXCLUDE_BASENAME_PATTERNS = (
+    "*.config.js",
+    "*.config.ts",
+    "*.config.mjs",
+    "*.config.cjs",
+    "*.config.json",
+    "vite.config.*",
+    "webpack.config.*",
+    "rollup.config.*",
+    "next.config.*",
+    "nuxt.config.*",
+    "uno.config.*",
+    "*.min.js",
+    "*.min.css",
+    "*.bundle.js",
+    "*.chunk.js",
+    "*.map",
+    "*.d.ts",
+    "*.generated.*",
+    "*.g.dart",
+    "*.lock",
+)
+
+EXCLUDE_PATH_MARKERS = (
+    "/.idea/",
+    "/.vscode/",
+    "/node_modules/",
+    "/__generated__/",
+    "/auto-generated/",
+)
 
 _cfg: "RunConfig | None" = None
 
@@ -229,17 +489,70 @@ def shorten_left_path(path: str, max_len: int = MAX_LEFT_PATH_LEN) -> str:
     return "…" + path[-(max_len - 1) :]
 
 
+def _basename_matches_patterns(name: str, patterns: tuple[str, ...]) -> bool:
+    lower = name.lower()
+    return any(fnmatch.fnmatch(lower, pat.lower()) for pat in patterns)
+
+
+def _is_excluded_source_file(rel: Path) -> bool:
+    name = rel.name
+    lower_name = name.lower()
+    if lower_name in EXCLUDE_FILE_NAMES:
+        return True
+    if _basename_matches_patterns(name, EXCLUDE_BASENAME_PATTERNS):
+        return True
+    posix = rel.as_posix().lower()
+    if any(marker in posix for marker in EXCLUDE_PATH_MARKERS):
+        return True
+    if lower_name.startswith("."):
+        return True
+    if lower_name in {
+        "config.js",
+        "config.ts",
+        "config.mjs",
+        "config.cjs",
+        "settings.js",
+        "settings.ts",
+        "env.js",
+        "env.ts",
+        "constants.js",
+        "constants.ts",
+        "data.js",
+        "data.ts",
+    }:
+        return True
+    return False
+
+
+def _source_collect_priority(rel: Path) -> tuple[int, str]:
+    """数值越小越优先：0=业务源码目录，1=其它，2=测试/示例/文档目录。"""
+    parts = {p.lower() for p in rel.parts[:-1]}
+    if parts & LOW_PRIORITY_DIR_NAMES:
+        return (2, rel.as_posix().lower())
+    if parts & HIGH_PRIORITY_DIR_NAMES:
+        return (0, rel.as_posix().lower())
+    return (1, rel.as_posix().lower())
+
+
+def _should_collect_file(path: Path, root: Path) -> bool:
+    if not path.is_file():
+        return False
+    if path.suffix.lower() not in SOURCE_EXTS:
+        return False
+    rel = path.relative_to(root)
+    if set(rel.parts) & EXCLUDE_DIRS:
+        return False
+    return not _is_excluded_source_file(rel)
+
+
 def collect_raw_code_lines() -> list[str]:
     root = cfg().project_root
     files: list[Path] = []
     for p in root.rglob("*"):
-        if not p.is_file() or p.suffix.lower() not in INCLUDE_EXTS:
-            continue
-        parts = set(p.relative_to(root).parts)
-        if parts & EXCLUDE_DIRS:
+        if not _should_collect_file(p, root):
             continue
         files.append(p)
-    files.sort(key=lambda x: str(x).lower())
+    files.sort(key=lambda p: _source_collect_priority(p.relative_to(root)))
 
     rows: list[str] = []
     for f in files:

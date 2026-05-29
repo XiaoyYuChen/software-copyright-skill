@@ -147,6 +147,24 @@
 - 格式：PDF
 - 文件大小：建议不超过50MB
 
+#### 源码采集范围与优先级（新增）
+
+生成程序鉴别材料时，`scripts/generate_program_pdf.py` 按以下原则选取源程序（与 `SKILL.md` 一致）：
+
+| 优先级 | 类型 | 说明 |
+|--------|------|------|
+| 高 | 用户业务源码 | `src/`、`app/`、`pages/`、`components/`、`api/`、`services/` 等目录中的源文件（多语言扩展名，**不含** `.json` 配置） |
+| 中 | 其它自研源码 | 未落在排除规则中的项目内源文件 |
+| 低（补足用） | 测试 / 示例 / 文档目录 | `test/`、`__tests__/`、`spec/`、`examples/`、`docs/` 等，仅当高优先级源码凑不满 60 页×50 行时才会排到后面 |
+
+**一律排除**（不得出现在程序鉴别材料中）：
+
+- 配置文件：`package.json`、`tsconfig.json`、`manifest.json`、`pages.json`、`*.config.js`、`vite.config.*`、`.env*` 等
+- 数据与锁文件：`*.lock`、`requirements.txt`、`composer.lock`、数据集 / `fixtures/` / `migrations/` / `seeds/` 等目录
+- IDE 与工具目录：`.idea/`、`.vscode/`、`.hbuilderx/`、`.vs/` 等
+- 构建与依赖产物：`node_modules/`、`dist/`、`build/`、`unpackage/`、`target/`、`__pycache__/`、`generated/`、`__generated__/` 等
+- 压缩与生成物：`*.min.js`、`*.bundle.js`、`*.map`、`*.d.ts`（声明/自动生成）、`*.g.dart` 等
+
 #### 代码排版与标识规则（新增）
 
 - 固定总页数：60页（前30页 + 后30页），每页50行；内置脚本执行即生成 60 页，不提供页数参数。
