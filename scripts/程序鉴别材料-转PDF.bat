@@ -3,12 +3,13 @@ chcp 65001 >nul
 setlocal
 
 rem 本脚本位于 skill 目录，固定生成 60 页程序鉴别材料
-rem 用法: 程序鉴别材料-转PDF.bat <项目根目录> [软件全称]
-rem 示例: 程序鉴别材料-转PDF.bat D:\AIProjects\Uni\ILovePoems 艾宾浩斯背诗笔记系统
+rem 用法: 程序鉴别材料-转PDF.bat <项目根目录> [软件全称] [版本号]
+rem 示例: 程序鉴别材料-转PDF.bat D:\my-app 某某管理系统 V1.0
 
 set "SKILL_DIR=%~dp0"
 set "PROJECT_ROOT=%~1"
 set "PROJECT_NAME=%~2"
+set "VERSION=%~3"
 
 if "%PROJECT_ROOT%"=="" (
   echo [ERROR] 缺少项目根目录参数。
@@ -17,6 +18,7 @@ if "%PROJECT_ROOT%"=="" (
   exit /b 1
 )
 if "%PROJECT_NAME%"=="" set "PROJECT_NAME=PROJECT_NAME"
+if "%VERSION%"=="" set "VERSION=V1.0"
 
 where python >nul 2>nul
 if errorlevel 1 (
@@ -25,7 +27,7 @@ if errorlevel 1 (
 )
 
 echo [1/1] 生成 60 页程序鉴别材料（md / html / pdf）...
-python "%SKILL_DIR%generate_program_pdf.py" --project-root "%PROJECT_ROOT%" --project-name "%PROJECT_NAME%"
+python "%SKILL_DIR%generate_program_pdf.py" --project-root "%PROJECT_ROOT%" --project-name "%PROJECT_NAME%" --version "%VERSION%"
 if errorlevel 1 (
   echo [ERROR] 生成失败。若提示缺少 reportlab，请执行: pip install reportlab
   exit /b 1

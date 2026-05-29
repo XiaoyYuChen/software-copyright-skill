@@ -14,7 +14,9 @@ from reportlab.pdfgen import canvas
 
 LINES_PER_PAGE = 50
 TOTAL_PAGES = 60
-NEEDED = LINES_PER_PAGE * TOTAL_PAGES
+MIN_LAST_PAGE_CODE_LINES = 40
+MIN_RAW_CODE_LINES = (TOTAL_PAGES - 1) * LINES_PER_PAGE + MIN_LAST_PAGE_CODE_LINES
+DEFAULT_VERSION = "V1.0"
 MAX_LEFT_PATH_LEN = 30
 ZH_FONT_NAME = "ZhFont"
 ZH_FONT_FILE = Path(r"C:\Windows\Fonts\simhei.ttf")
@@ -297,18 +299,18 @@ class RunConfig:
     project_root: Path
     output_dir: Path
     project_name: str
+    version: str
 
     @property
     def total_pages(self) -> int:
         return TOTAL_PAGES
 
     @property
-    def needed(self) -> int:
-        return NEEDED
-
-    @property
     def header(self) -> str:
-        return f"{self.project_name}-源程序"
+        ver = self.version.strip()
+        if ver and not ver.upper().startswith("V"):
+            ver = f"V{ver}"
+        return f"{self.project_name}{ver}"
 
     @property
     def md_path(self) -> Path:
@@ -350,6 +352,11 @@ def parse_args() -> argparse.Namespace:
         default="PROJECT_NAME",
         help="Software full name for PDF header (must match 基本信息).",
     )
+    p.add_argument(
+        "--version",
+        default=DEFAULT_VERSION,
+        help="Version for page header, e.g. V1.0 (default: V1.0).",
+    )
     return p.parse_args()
 
 
@@ -364,6 +371,7 @@ def build_config(args: argparse.Namespace) -> RunConfig:
         project_root=project_root,
         output_dir=output_dir,
         project_name=args.project_name.strip(),
+        version=args.version.strip() or DEFAULT_VERSION,
     )
 
 
@@ -581,25 +589,28 @@ def format_display_lines(raw_rows: list[str]) -> list[str]:
     return out
 
 
-def build_fixed_60_lines() -> list[str]:
-    c = cfg()
-    raw = collect_raw_code_lines()
-    if len(raw) < c.needed:
-        raise ValueError(f"Not enough raw code lines: {len(raw)} < {c.needed}")
-    return format_display_lines(raw[: c.needed])
+def _count_code_lines(rows: list[str]) -> int:
+    return sum(1 for r in rows if not r.startswith("模块:"))
 
 
-def with_page_line_prefix(row: str, line_index_in_page: int) -> str:
-    return f"{line_index_in_page:02d}   {row}"
+def _ends_at_module_boundary(all_lines: list[str], end: int) -> bool:
+    if end <= 0 or end > len(all_lines):
+        return False
+    if all_lines[end - 1].startswith("模块:"):
+        return False
+    if end < len(all_lines) and not all_lines[end].startswith("模块:"):
+        return False
+    return True
 
 
-def paginate_by_code_lines(display_lines: list[str]) -> list[list[str]]:
+def _paginate_raw(display_lines: list[str]) -> list[list[str]]:
+    """分页（不含页内行号前缀）；模块行不计入每页 50 行代码统计。"""
     pages: list[list[str]] = []
     cur: list[str] = []
     code_count = 0
     for row in display_lines:
         is_module = row.startswith("模块:")
-        if code_count == LINES_PER_PAGE:
+        if not is_module and code_count >= LINES_PER_PAGE:
             pages.append(cur)
             cur = []
             code_count = 0
@@ -607,22 +618,87 @@ def paginate_by_code_lines(display_lines: list[str]) -> list[list[str]]:
             cur.append(row)
         else:
             code_count += 1
-            cur.append(with_page_line_prefix(row, code_count))
+            cur.append(row)
     if cur:
         pages.append(cur)
+    return pages
+
+
+def _is_valid_60_page_layout(pages: list[list[str]]) -> bool:
     if len(pages) != TOTAL_PAGES:
+        return False
+    for page in pages[:-1]:
+        if _count_code_lines(page) != LINES_PER_PAGE:
+            return False
+    last = _count_code_lines(pages[-1])
+    return MIN_LAST_PAGE_CODE_LINES <= last <= LINES_PER_PAGE
+
+
+def select_lines_for_60_pages(all_lines: list[str]) -> list[str]:
+    best_end: int | None = None
+    best_last_codes = -1
+    for end in range(1, len(all_lines) + 1):
+        if not _ends_at_module_boundary(all_lines, end):
+            continue
+        pages = _paginate_raw(all_lines[:end])
+        if not _is_valid_60_page_layout(pages):
+            continue
+        last_codes = _count_code_lines(pages[-1])
+        if last_codes > best_last_codes:
+            best_end = end
+            best_last_codes = last_codes
+    if best_end is None:
         raise ValueError(
-            f"Unexpected page count after pagination: {len(pages)} != {TOTAL_PAGES}"
+            "Cannot form 60 pages: need 59 full pages (50 code lines each), "
+            f"last page {MIN_LAST_PAGE_CODE_LINES}-{LINES_PER_PAGE} code lines ending "
+            "at a complete module boundary. Add more source code or check exclusions."
         )
+    return all_lines[:best_end]
+
+
+def build_display_lines_for_submission() -> list[str]:
+    raw = collect_raw_code_lines()
+    if len(raw) < MIN_RAW_CODE_LINES:
+        raise ValueError(
+            f"Not enough raw code lines: {len(raw)} < {MIN_RAW_CODE_LINES} "
+            f"(need at least {(TOTAL_PAGES - 1) * LINES_PER_PAGE + MIN_LAST_PAGE_CODE_LINES} "
+            "lines of user source code after filtering)."
+        )
+    return select_lines_for_60_pages(format_display_lines(raw))
+
+
+def with_page_line_prefix(row: str, line_index_in_page: int) -> str:
+    return f"{line_index_in_page:02d}   {row}"
+
+
+def paginate_by_code_lines(display_lines: list[str]) -> list[list[str]]:
+    raw_pages = _paginate_raw(display_lines)
+    if not _is_valid_60_page_layout(raw_pages):
+        raise ValueError(
+            f"Invalid pagination: expected {TOTAL_PAGES} pages with "
+            f"{LINES_PER_PAGE} code lines on pages 1-{TOTAL_PAGES - 1} and "
+            f"{MIN_LAST_PAGE_CODE_LINES}-{LINES_PER_PAGE} on the last page."
+        )
+    pages: list[list[str]] = []
+    for raw_page in raw_pages:
+        page: list[str] = []
+        code_count = 0
+        for row in raw_page:
+            if row.startswith("模块:"):
+                page.append(row)
+            else:
+                code_count += 1
+                page.append(with_page_line_prefix(row, code_count))
+        pages.append(page)
     return pages
 
 
 def write_markdown(display_lines: list[str]) -> None:
     c = cfg()
     pages = paginate_by_code_lines(display_lines)
-    lines: list[str] = [f"# {c.project_name} V1.0", "", "```text"]
+    lines: list[str] = [f"# {c.header}", "", "```text"]
     for page in range(1, len(pages) + 1):
-        lines.append(f"---- 第{page}页（本节） ----")
+        lines.append(f"---- 第{page}页 页眉:{c.header} ----")
         for row in pages[page - 1]:
             lines.append(row)
         lines.append("")
@@ -637,12 +713,21 @@ def write_debug_html(display_lines: list[str]) -> None:
         '<!doctype html><html><head><meta charset="utf-8"><style>',
         "body{margin:0;padding:0;font-family:'Microsoft YaHei','Consolas',monospace;color:#000}",
         ".page{page-break-after:always;padding:12mm 10mm;}",
+        ".page-header{display:flex;justify-content:space-between;align-items:center;"
+        "border-bottom:1px solid #000;padding-bottom:4px;margin-bottom:8px;font-size:12px;}",
+        ".page-header .title{flex:1;text-align:center;font-weight:700;}",
+        ".page-header .num{min-width:4em;text-align:right;}",
         ".line{white-space:pre;font-size:12px;line-height:18px;}",
         ".module{font-size:13px;font-weight:700;}",
         "</style></head><body>",
     ]
     for page in range(len(pages)):
+        page_no = page + 1
         html.append('<div class="page">')
+        html.append(
+            f'<div class="page-header"><span class="title">{c.header}</span>'
+            f'<span class="num">第 {page_no} 页</span></div>'
+        )
         for row in pages[page]:
             escaped = (
                 row.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
@@ -677,11 +762,9 @@ def write_pdf(display_lines: list[str]) -> None:
         c.setFont(font_name, 10)
         c.setFillColor(colors.black)
         c.drawCentredString(page_w / 2, header_y, run.header)
+        c.drawRightString(right, header_y, f"第 {page} 页")
         c.setLineWidth(0.4)
         c.line(left, header_y - 4, right, header_y - 4)
-        c.drawCentredString(
-            page_w / 2, footer_y, f"第 {page} 页 共 {run.total_pages} 页"
-        )
         c.line(left, footer_y + 10, right, footer_y + 10)
 
         y = first_line_y
@@ -715,7 +798,7 @@ def main() -> None:
     _cfg = build_config(args)
     _cfg.output_dir.mkdir(parents=True, exist_ok=True)
 
-    lines = build_fixed_60_lines()
+    lines = build_display_lines_for_submission()
     assert_naming_consistency(lines)
     write_markdown(lines)
     write_debug_html(lines)
