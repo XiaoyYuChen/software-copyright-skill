@@ -22,9 +22,13 @@ software-copyright-skill/
 │   ├── generate_program_pdf.py
 │   └── 程序鉴别材料-转PDF.bat
 ├── references/           # 按需加载的详细规则
-│   └── reference.md
+│   ├── reference.md
+│   ├── doc-template.md
+│   └── review-checklist.md   # 审核/审查完整清单
 └── assets/               # 静态模板与样例
-    └── code-pages-60.html
+    ├── code-pages-60.html
+    ├── 说明文档模板.doc   # 文档鉴别材料 Word 模板
+    └── 说明文档模板.md    # 文档鉴别材料 Markdown 骨架
 ```
 
 ## 安装
