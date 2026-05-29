@@ -6,107 +6,107 @@ body{margin:0;padding:0;font-family:'Microsoft YaHei','Consolas',monospace;color
 </style></head><body>
 <div class="page">
 <div class="line module">模块:App.vue</div>
-<div class="line">01   App.vue:0001:  &lt;script&gt;</div>
-<div class="line">02   App.vue:0002:  import { readLaunchGroupShareGid } from './sdk/deeplink.js';</div>
-<div class="line">03   App.vue:0004:  export default {</div>
-<div class="line">04   App.vue:0005:      onLaunch(options) {</div>
-<div class="line">05   App.vue:0006:          try {</div>
-<div class="line">06   App.vue:0007:              const gid = readLaunchGroupShareGid(options);</div>
-<div class="line">07   App.vue:0008:              if (gid) {</div>
-<div class="line">08   App.vue:0009:                  uni.setStorageSync('pendingPoemGroupShareGid', gid);</div>
-<div class="line">09   App.vue:0010:              }</div>
-<div class="line">10   App.vue:0011:          } catch (e) {</div>
-<div class="line">11   App.vue:0013:          }</div>
-<div class="line">12   App.vue:0014:      },</div>
-<div class="line">13   App.vue:0015:      onShow(options) {</div>
-<div class="line">14   App.vue:0016:          try {</div>
-<div class="line">15   App.vue:0017:              const gid = readLaunchGroupShareGid(options);</div>
-<div class="line">16   App.vue:0018:              if (gid) {</div>
-<div class="line">17   App.vue:0019:                  uni.setStorageSync('pendingPoemGroupShareGid', gid);</div>
-<div class="line">18   App.vue:0020:              }</div>
-<div class="line">19   App.vue:0021:          } catch (e) {</div>
-<div class="line">20   App.vue:0023:          }</div>
-<div class="line">21   App.vue:0024:      },</div>
-<div class="line">22   App.vue:0025:      onHide() {}</div>
-<div class="line">23   App.vue:0026:  };</div>
-<div class="line">24   App.vue:0027:  &lt;/script&gt;</div>
-<div class="line">25   App.vue:0029:  &lt;style lang="scss"&gt;</div>
-<div class="line">26   App.vue:0030:  @import './uni_modules/uni-scss/index.scss';</div>
-<div class="line">27   App.vue:0032:  page {</div>
-<div class="line">28   App.vue:0033:      font-family: 'Microsoft YaHei', 'PingFang SC', Arial, sans-serif;</div>
-<div class="line">29   App.vue:0034:      background-color: #f5f5f5;</div>
-<div class="line">30   App.vue:0035:      color: #333;</div>
-<div class="line">31   App.vue:0036:      line-height: 1.6;</div>
-<div class="line">32   App.vue:0037:  }</div>
-<div class="line">33   App.vue:0039:  view,</div>
-<div class="line">34   App.vue:0040:  text,</div>
-<div class="line">35   App.vue:0041:  button,</div>
-<div class="line">36   App.vue:0042:  picker {</div>
-<div class="line">37   App.vue:0043:      box-sizing: border-box;</div>
-<div class="line">38   App.vue:0044:  }</div>
-<div class="line">39   App.vue:0045:  &lt;/style&gt;</div>
-<div class="line">40   checkin-calendar-prompt.vue:0005:  &lt;template&gt;</div>
-<div class="line">41   checkin-calendar-prompt.vue:0006:      &lt;uni-popup ref="popup" type="center" :is-mask-click="true" @maskClick="onClose"&gt;</div>
-<div class="line">42   checkin-calendar-prompt.vue:0007:          &lt;view class="cal-modal" v-if="opts"&gt;</div>
-<div class="line">43   checkin-calendar-prompt.vue:0008:              &lt;view class="title"&gt;把下次打卡加入手机日历？&lt;/view&gt;</div>
-<div class="line">44   checkin-calendar-prompt.vue:0009:              &lt;view class="poem"&gt;{{ poemTitle }}&lt;/view&gt;</div>
-<div class="line">45   checkin-calendar-prompt.vue:0010:              &lt;view class="when"&gt;{{ whenText }}&lt;/view&gt;</div>
-<div class="line">46   checkin-calendar-prompt.vue:0012:              &lt;view class="actions"&gt;</div>
-<div class="line">47   checkin-calendar-prompt.vue:0013:                  &lt;button class="btn ghost" @tap="onClose"&gt;稍后再说&lt;/button&gt;</div>
-<div class="line">48   checkin-calendar-prompt.vue:0016:                  &lt;button class="btn primary" @tap="onAddWx"&gt;加入日历&lt;/button&gt;</div>
-<div class="line">49   checkin-calendar-prompt.vue:0027:                  &lt;button</div>
-<div class="line">50   checkin-calendar-prompt.vue:0028:                      class="btn primary"</div>
+<div class="line">App.vue:  &lt;script&gt;</div>
+<div class="line">App.vue:  import { readLaunchGroupShareGid } from './sdk/deeplink.js';</div>
+<div class="line">App.vue:  export default {</div>
+<div class="line">App.vue:      onLaunch(options) {</div>
+<div class="line">App.vue:          try {</div>
+<div class="line">App.vue:              const gid = readLaunchGroupShareGid(options);</div>
+<div class="line">App.vue:              if (gid) {</div>
+<div class="line">App.vue:                  uni.setStorageSync('pendingPoemGroupShareGid', gid);</div>
+<div class="line">App.vue:              }</div>
+<div class="line">App.vue:          } catch (e) {</div>
+<div class="line">App.vue:          }</div>
+<div class="line">App.vue:      },</div>
+<div class="line">App.vue:      onShow(options) {</div>
+<div class="line">App.vue:          try {</div>
+<div class="line">App.vue:              const gid = readLaunchGroupShareGid(options);</div>
+<div class="line">App.vue:              if (gid) {</div>
+<div class="line">App.vue:                  uni.setStorageSync('pendingPoemGroupShareGid', gid);</div>
+<div class="line">App.vue:              }</div>
+<div class="line">App.vue:          } catch (e) {</div>
+<div class="line">App.vue:          }</div>
+<div class="line">App.vue:      },</div>
+<div class="line">App.vue:      onHide() {}</div>
+<div class="line">App.vue:  };</div>
+<div class="line">App.vue:  &lt;/script&gt;</div>
+<div class="line">App.vue:  &lt;style lang="scss"&gt;</div>
+<div class="line">App.vue:  @import './uni_modules/uni-scss/index.scss';</div>
+<div class="line">App.vue:  page {</div>
+<div class="line">App.vue:      font-family: 'Microsoft YaHei', 'PingFang SC', Arial, sans-serif;</div>
+<div class="line">App.vue:      background-color: #f5f5f5;</div>
+<div class="line">App.vue:      color: #333;</div>
+<div class="line">App.vue:      line-height: 1.6;</div>
+<div class="line">App.vue:  }</div>
+<div class="line">App.vue:  view,</div>
+<div class="line">App.vue:  text,</div>
+<div class="line">App.vue:  button,</div>
+<div class="line">App.vue:  picker {</div>
+<div class="line">App.vue:      box-sizing: border-box;</div>
+<div class="line">App.vue:  }</div>
+<div class="line">App.vue:  &lt;/style&gt;</div>
+<div class="line">checkin-calendar-prompt.vue:  &lt;template&gt;</div>
+<div class="line">checkin-calendar-prompt.vue:      &lt;uni-popup ref="popup" type="center" :is-mask-click="true" @maskClick="onClose"&gt;</div>
+<div class="line">checkin-calendar-prompt.vue:          &lt;view class="cal-modal" v-if="opts"&gt;</div>
+<div class="line">checkin-calendar-prompt.vue:              &lt;view class="title"&gt;把下次打卡加入手机日历？&lt;/view&gt;</div>
+<div class="line">checkin-calendar-prompt.vue:              &lt;view class="poem"&gt;{{ poemTitle }}&lt;/view&gt;</div>
+<div class="line">checkin-calendar-prompt.vue:              &lt;view class="when"&gt;{{ whenText }}&lt;/view&gt;</div>
+<div class="line">checkin-calendar-prompt.vue:              &lt;view class="actions"&gt;</div>
+<div class="line">checkin-calendar-prompt.vue:                  &lt;button class="btn ghost" @tap="onClose"&gt;稍后再说&lt;/button&gt;</div>
+<div class="line">checkin-calendar-prompt.vue:                  &lt;button class="btn primary" @tap="onAddWx"&gt;加入日历&lt;/button&gt;</div>
+<div class="line">checkin-calendar-prompt.vue:                  &lt;button</div>
+<div class="line">checkin-calendar-prompt.vue:                      class="btn primary"</div>
 </div>
 <div class="page">
-<div class="line">01   checkin-calendar-prompt.vue:0029:                      open-type="addCalendarEvent"</div>
-<div class="line">02   checkin-calendar-prompt.vue:0030:                      :data-calendar-options="ttCalendarOptions"</div>
-<div class="line">03   checkin-calendar-prompt.vue:0031:                      @addcalendarevent="onAddTtResult"</div>
-<div class="line">04   checkin-calendar-prompt.vue:0032:                  &gt;加入日历&lt;/button&gt;</div>
-<div class="line">05   checkin-calendar-prompt.vue:0036:                  &lt;button class="btn primary" @tap="onAddFallback"&gt;复制到剪贴板&lt;/button&gt;</div>
-<div class="line">06   checkin-calendar-prompt.vue:0038:              &lt;/view&gt;</div>
-<div class="line">07   checkin-calendar-prompt.vue:0039:          &lt;/view&gt;</div>
-<div class="line">08   checkin-calendar-prompt.vue:0040:      &lt;/uni-popup&gt;</div>
-<div class="line">09   checkin-calendar-prompt.vue:0041:  &lt;/template&gt;</div>
-<div class="line">10   checkin-calendar-prompt.vue:0043:  &lt;script&gt;</div>
-<div class="line">11   checkin-calendar-prompt.vue:0044:  import {</div>
-<div class="line">12   checkin-calendar-prompt.vue:0045:      addPhoneCalendarWx,</div>
-<div class="line">13   checkin-calendar-prompt.vue:0046:      buildCalendarOptions,</div>
-<div class="line">14   checkin-calendar-prompt.vue:0047:      toTtCalendarOptions,</div>
-<div class="line">15   checkin-calendar-prompt.vue:0048:      copyCalendarOptionsToClipboard</div>
-<div class="line">16   checkin-calendar-prompt.vue:0049:  } from '../../sdk/calendar.js';</div>
-<div class="line">17   checkin-calendar-prompt.vue:0050:  import logger from '../../sdk/logger.js';</div>
-<div class="line">18   checkin-calendar-prompt.vue:0052:  export default {</div>
-<div class="line">19   checkin-calendar-prompt.vue:0053:      data() {</div>
-<div class="line">20   checkin-calendar-prompt.vue:0054:          return {</div>
-<div class="line">21   checkin-calendar-prompt.vue:0055:              poem: null,</div>
-<div class="line">22   checkin-calendar-prompt.vue:0056:              slot: null,</div>
-<div class="line">23   checkin-calendar-prompt.vue:0057:              opts: null</div>
-<div class="line">24   checkin-calendar-prompt.vue:0058:          };</div>
-<div class="line">25   checkin-calendar-prompt.vue:0059:      },</div>
-<div class="line">26   checkin-calendar-prompt.vue:0060:      computed: {</div>
-<div class="line">27   checkin-calendar-prompt.vue:0061:          poemTitle() {</div>
-<div class="line">28   checkin-calendar-prompt.vue:0062:              if (!this.poem) return '';</div>
-<div class="line">29   checkin-calendar-prompt.vue:0063:              const dyn = this.poem.dynasty ? `·${this.poem.dynasty}` : '';</div>
-<div class="line">30   checkin-calendar-prompt.vue:0064:              const author = this.poem.author ? `·${this.poem.author}` : '';</div>
-<div class="line">31   checkin-calendar-prompt.vue:0065:              return `${this.poem.title || ''}${dyn}${author}`;</div>
-<div class="line">32   checkin-calendar-prompt.vue:0066:          },</div>
-<div class="line">33   checkin-calendar-prompt.vue:0067:          whenText() {</div>
-<div class="line">34   checkin-calendar-prompt.vue:0068:              if (!this.slot) return '';</div>
-<div class="line">35   checkin-calendar-prompt.vue:0069:              return `${this.slot.scheduled_date} 18:00 第 ${this.slot.checkin_day} 天打卡`;</div>
-<div class="line">36   checkin-calendar-prompt.vue:0070:          },</div>
-<div class="line">37   checkin-calendar-prompt.vue:0071:          ttCalendarOptions() {</div>
-<div class="line">38   checkin-calendar-prompt.vue:0072:              return toTtCalendarOptions(this.opts) || {};</div>
-<div class="line">39   checkin-calendar-prompt.vue:0073:          }</div>
-<div class="line">40   checkin-calendar-prompt.vue:0074:      },</div>
-<div class="line">41   checkin-calendar-prompt.vue:0075:      methods: {</div>
-<div class="line">42   checkin-calendar-prompt.vue:0076:          open({ poem, slot }) {</div>
-<div class="line">43   checkin-calendar-prompt.vue:0077:              this.poem = poem || null;</div>
-<div class="line">44   checkin-calendar-prompt.vue:0078:              this.slot = slot || null;</div>
-<div class="line">45   checkin-calendar-prompt.vue:0079:              this.opts = buildCalendarOptions({ poem, slot });</div>
-<div class="line">46   checkin-calendar-prompt.vue:0080:              if (!this.opts) {</div>
-<div class="line">47   checkin-calendar-prompt.vue:0081:                  logger.warn('checkin-calendar-prompt', 'open: build options failed', { poem, slot });</div>
-<div class="line">48   checkin-calendar-prompt.vue:0082:                  return;</div>
-<div class="line">49   checkin-calendar-prompt.vue:0083:              }</div>
-<div class="line">50   checkin-calendar-prompt.vue:0084:              this.$refs.popup &amp;&amp; this.$refs.popup.open();</div>
+<div class="line">checkin-calendar-prompt.vue:                      open-type="addCalendarEvent"</div>
+<div class="line">checkin-calendar-prompt.vue:                      :data-calendar-options="ttCalendarOptions"</div>
+<div class="line">checkin-calendar-prompt.vue:                      @addcalendarevent="onAddTtResult"</div>
+<div class="line">checkin-calendar-prompt.vue:                  &gt;加入日历&lt;/button&gt;</div>
+<div class="line">checkin-calendar-prompt.vue:                  &lt;button class="btn primary" @tap="onAddFallback"&gt;复制到剪贴板&lt;/button&gt;</div>
+<div class="line">checkin-calendar-prompt.vue:              &lt;/view&gt;</div>
+<div class="line">checkin-calendar-prompt.vue:          &lt;/view&gt;</div>
+<div class="line">checkin-calendar-prompt.vue:      &lt;/uni-popup&gt;</div>
+<div class="line">checkin-calendar-prompt.vue:  &lt;/template&gt;</div>
+<div class="line">checkin-calendar-prompt.vue:  &lt;script&gt;</div>
+<div class="line">checkin-calendar-prompt.vue:  import {</div>
+<div class="line">checkin-calendar-prompt.vue:      addPhoneCalendarWx,</div>
+<div class="line">checkin-calendar-prompt.vue:      buildCalendarOptions,</div>
+<div class="line">checkin-calendar-prompt.vue:      toTtCalendarOptions,</div>
+<div class="line">checkin-calendar-prompt.vue:      copyCalendarOptionsToClipboard</div>
+<div class="line">checkin-calendar-prompt.vue:  } from '../../sdk/calendar.js';</div>
+<div class="line">checkin-calendar-prompt.vue:  import logger from '../../sdk/logger.js';</div>
+<div class="line">checkin-calendar-prompt.vue:  export default {</div>
+<div class="line">checkin-calendar-prompt.vue:      data() {</div>
+<div class="line">checkin-calendar-prompt.vue:          return {</div>
+<div class="line">checkin-calendar-prompt.vue:              poem: null,</div>
+<div class="line">checkin-calendar-prompt.vue:              slot: null,</div>
+<div class="line">checkin-calendar-prompt.vue:              opts: null</div>
+<div class="line">checkin-calendar-prompt.vue:          };</div>
+<div class="line">checkin-calendar-prompt.vue:      },</div>
+<div class="line">checkin-calendar-prompt.vue:      computed: {</div>
+<div class="line">checkin-calendar-prompt.vue:          poemTitle() {</div>
+<div class="line">checkin-calendar-prompt.vue:              if (!this.poem) return '';</div>
+<div class="line">checkin-calendar-prompt.vue:              const dyn = this.poem.dynasty ? `·${this.poem.dynasty}` : '';</div>
+<div class="line">checkin-calendar-prompt.vue:              const author = this.poem.author ? `·${this.poem.author}` : '';</div>
+<div class="line">checkin-calendar-prompt.vue:              return `${this.poem.title || ''}${dyn}${author}`;</div>
+<div class="line">checkin-calendar-prompt.vue:          },</div>
+<div class="line">checkin-calendar-prompt.vue:          whenText() {</div>
+<div class="line">checkin-calendar-prompt.vue:              if (!this.slot) return '';</div>
+<div class="line">checkin-calendar-prompt.vue:              return `${this.slot.scheduled_date} 18:00 第 ${this.slot.checkin_day} 天打卡`;</div>
+<div class="line">checkin-calendar-prompt.vue:          },</div>
+<div class="line">checkin-calendar-prompt.vue:          ttCalendarOptions() {</div>
+<div class="line">checkin-calendar-prompt.vue:              return toTtCalendarOptions(this.opts) || {};</div>
+<div class="line">checkin-calendar-prompt.vue:          }</div>
+<div class="line">checkin-calendar-prompt.vue:      },</div>
+<div class="line">checkin-calendar-prompt.vue:      methods: {</div>
+<div class="line">checkin-calendar-prompt.vue:          open({ poem, slot }) {</div>
+<div class="line">checkin-calendar-prompt.vue:              this.poem = poem || null;</div>
+<div class="line">checkin-calendar-prompt.vue:              this.slot = slot || null;</div>
+<div class="line">checkin-calendar-prompt.vue:              this.opts = buildCalendarOptions({ poem, slot });</div>
+<div class="line">checkin-calendar-prompt.vue:              if (!this.opts) {</div>
+<div class="line">checkin-calendar-prompt.vue:                  logger.warn('checkin-calendar-prompt', 'open: build options failed', { poem, slot });</div>
+<div class="line">checkin-calendar-prompt.vue:                  return;</div>
+<div class="line">checkin-calendar-prompt.vue:              }</div>
+<div class="line">checkin-calendar-prompt.vue:              this.$refs.popup &amp;&amp; this.$refs.popup.open();</div>
 </div>
 </body></html>

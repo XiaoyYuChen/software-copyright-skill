@@ -573,19 +573,21 @@ def collect_raw_code_lines() -> list[str]:
 
 def format_display_lines(raw_rows: list[str]) -> list[str]:
     out: list[str] = []
+    current_file: str | None = None
     for row in raw_rows:
         parts = row.split(":", 2)
         if len(parts) != 3:
             out.append(clean_line(row))
             continue
-        left, line_no, code = parts
+        left, _line_no, code = parts
         left = clean_line(left)
         filename = left.rsplit("/", 1)[-1]
-        if line_no == "0001":
+        if left != current_file:
+            current_file = left
             parent = left.rsplit("/", 1)[0] if "/" in left else left
             out.append(f"模块:{parent}")
         left_display = shorten_left_path(filename)
-        out.append(f"{left_display}:{clean_line(line_no)}:  {clean_line(code)}")
+        out.append(f"{left_display}:  {clean_line(code)}")
     return out
 
 
@@ -604,7 +606,7 @@ def _ends_at_module_boundary(all_lines: list[str], end: int) -> bool:
 
 
 def _paginate_raw(display_lines: list[str]) -> list[list[str]]:
-    """分页（不含页内行号前缀）；模块行不计入每页 50 行代码统计。"""
+    """分页；模块行不计入每页 50 行代码统计。"""
     pages: list[list[str]] = []
     cur: list[str] = []
     code_count = 0
@@ -667,29 +669,14 @@ def build_display_lines_for_submission() -> list[str]:
     return select_lines_for_60_pages(format_display_lines(raw))
 
 
-def with_page_line_prefix(row: str, line_index_in_page: int) -> str:
-    return f"{line_index_in_page:02d}   {row}"
-
-
 def paginate_by_code_lines(display_lines: list[str]) -> list[list[str]]:
-    raw_pages = _paginate_raw(display_lines)
-    if not _is_valid_60_page_layout(raw_pages):
+    pages = _paginate_raw(display_lines)
+    if not _is_valid_60_page_layout(pages):
         raise ValueError(
             f"Invalid pagination: expected {TOTAL_PAGES} pages with "
             f"{LINES_PER_PAGE} code lines on pages 1-{TOTAL_PAGES - 1} and "
             f"{MIN_LAST_PAGE_CODE_LINES}-{LINES_PER_PAGE} on the last page."
         )
-    pages: list[list[str]] = []
-    for raw_page in raw_pages:
-        page: list[str] = []
-        code_count = 0
-        for row in raw_page:
-            if row.startswith("模块:"):
-                page.append(row)
-            else:
-                code_count += 1
-                page.append(with_page_line_prefix(row, code_count))
-        pages.append(page)
     return pages
 
 
